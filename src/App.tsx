@@ -1,48 +1,80 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-
+import './globals.css';
 const App = () => {
-  const [input, setInput] = useState('');
-  const [result] = useState(null);
+	const [stringCalculator, setStringCalculator] = useState('');
+	const [result, setResult] = useState(null);
+	const [warningText, setWarningText] = useState('');
 
-  const handleCalculate = () => {};
+	const handleCalculateSubmit = (event: any) => {
+		if (event) event.preventDefault();
+		if (!stringCalculator) {
+			setWarningText('Please fill the field');
+			return;
+		}
+		if (/[^0-9+\-*/\s]/.test(stringCalculator)) {
+			setWarningText(
+				'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'
+			);
+			return;
+		}
+		setWarningText('');
+	};
 
-  return (
-    <div style={{ padding: '20px', backgroundColor: '#fff', color: '#aaa' }}>
-      <img
-        src='https://images.unsplash.com/photo-1594352161389-11756265d1b5?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        width={600}
-        height={400}
-      />
+	return (
+		<div className="app-container">
+			<div className="card_container">
+				<img
+					src="https://images.unsplash.com/photo-1594352161389-11756265d1b5?q=80&w=800&auto=format&fit=crop"
+					alt="Calculator Banner"
+					className="image_style"
+				/>
 
-      <h2>String Calculator</h2>
-
-      <h1 style={{ fontSize: '20px' }}>Enter numbers</h1>
-
-      <textarea
-        style={{ margin: '10px 0', color: '#aaa' }}
-        placeholder='Enter numbers'
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-
-      <div
-        onClick={handleCalculate}
-        style={{
-          padding: '10px',
-          backgroundColor: '#008cba',
-          color: '#fff',
-          border: 'none',
-        }}>
-        Calculate
-      </div>
-
-      {result !== null && <p style={{ color: 'green' }}>Result: {result}</p>}
-
-      <div role='alert'>
-        <p>Make sure you enter numbers correctly!</p>
-      </div>
-    </div>
-  );
+				<h2 className="card_heading_style">String Calculator</h2>
+				<form
+					aria-label="string-calculator-form"
+					onSubmit={handleCalculateSubmit}
+				>
+					<div className="content_container">
+						<div className="input_container">
+							<label htmlFor="string_calculator" className="label_style">
+								Enter numbers with operators(+, -, *, /):
+							</label>
+							<textarea
+								id="string_calculator"
+								rows={2}
+								className="textarea_style"
+								placeholder="enter here eg: 1 + 2 - 3 * 4 / 5"
+								value={stringCalculator}
+								onChange={e => {
+									if (e.target.value !== '') {
+										setStringCalculator(e.target.value);
+									} else {
+										setStringCalculator('');
+										setResult(null);
+										setWarningText('');
+									}
+								}}
+								aria-required="true"
+								required
+							/>
+						</div>
+						<button type="submit" className="primary_button_style">
+							Calculate
+						</button>
+					</div>
+					{result !== null && (
+						<p className="result_test_style">Result: {result}</p>
+					)}
+					{!warningText ? null : (
+						<div role="alert" className="warning_text_style">
+							{warningText}
+						</div>
+					)}
+				</form>
+			</div>
+		</div>
+	);
 };
 
 export default App;
