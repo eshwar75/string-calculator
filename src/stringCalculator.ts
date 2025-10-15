@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 const invalidCharRegex = /[^0-9+\-*()/\s]/;
 const regexConsecutiveOperators = /[+\-*\/]{2,}/;
+const numberRegex = /[0-9]/;
 export function validateExpression(string: string): boolean {
 	let balance = 0;
 	for (const ch of string) {
@@ -17,11 +18,26 @@ export function validateExpression(string: string): boolean {
 }
 
 export function validateRegexString(stringCalculator: string): boolean {
-	if (invalidCharRegex.test(stringCalculator)) return false;
-	// const hasNumber = /[0-9]/.test(stringCalculator);
-	if (!/[0-9]/.test(stringCalculator)) return false;
-	if (regexConsecutiveOperators.test(stringCalculator.replace(/\s+/g, '')))
+	const withoutDecimals = stringCalculator
+		.replace(/\s+/g, '')
+		.replace(/\d+(\.\d+)?/g, 'N');
+
+	if (
+		invalidCharRegex.test(stringCalculator) ||
+		!numberRegex.test(stringCalculator) ||
+		regexConsecutiveOperators.test(withoutDecimals)
+	) {
 		return false;
+	}
 
 	return true;
+}
+
+export function calculateExpression(stringValue: string): number | null {
+	if (!validateExpression(stringValue)) return null;
+	try {
+		return Function(`"use strict"; return (${stringValue})`)();
+	} catch {
+		return null;
+	}
 }

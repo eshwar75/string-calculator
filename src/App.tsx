@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import './globals.css';
-import { validateExpression, validateRegexString } from './stringCalculator';
+import {
+	calculateExpression,
+	validateExpression,
+	validateRegexString,
+} from './stringCalculator';
 
 const App = () => {
 	const [stringCalculator, setStringCalculator] = useState('');
@@ -15,7 +19,10 @@ const App = () => {
 			setWarningText('Please fill the field');
 			return;
 		}
-		if (!validateRegexString(stringCalculator)) {
+		if (
+			!validateRegexString(stringCalculator) &&
+			calculateExpression(stringCalculator) === null
+		) {
 			setWarningText(
 				'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'
 			);
