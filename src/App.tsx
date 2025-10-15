@@ -24,9 +24,7 @@ const App = () => {
 			!validateRegexString(stringCalculator) &&
 			calculateExpressionDecimal(stringCalculator) === null
 		) {
-			setWarningText(
-				'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'
-			);
+			setWarningText('Please enter a valid numbers with operators(+, -, *, /)');
 			return;
 		}
 		if (!validateExpression(stringCalculator)) {
@@ -56,13 +54,13 @@ const App = () => {
 					<div className="content_container">
 						<div className="input_container">
 							<label htmlFor="string_calculator" className="label_style">
-								Enter numbers with operators(+, -, *, /):
+								Enter numbers
 							</label>
 							<textarea
 								id="string_calculator"
 								rows={2}
 								className="textarea_style"
-								placeholder="enter here eg: 1 + 2 - 3 * 4 / 5"
+								placeholder="enter here"
 								value={stringCalculator}
 								onChange={e => {
 									if (e.target.value !== '') {
@@ -89,6 +87,40 @@ const App = () => {
 							{warningText}
 						</div>
 					)}
+					<div
+						className="info-section"
+						style={{
+							width: '100%',
+							justifyItems: 'flex-start',
+						}}
+					>
+						<h3>Info</h3>
+						<p>
+							• Use <b>numbers</b> and basic operators <b>( +, -, *, / )</b>.
+						</p>
+						<p>
+							• You can include <b>parentheses</b> to group operations.
+						</p>
+						<p>
+							• Avoid using <b>letters</b> or <b>special symbols</b>.
+						</p>
+						<p
+							style={{
+								color: 'var(--primary-success-text-color)',
+								fontWeight: '600',
+							}}
+						>
+							• Example syntax do: <b>(2 + 3) * 4 or (4+5) * (5-2)</b>
+						</p>
+						<p
+							style={{
+								color: 'var(--primary-warning-text-color)',
+								fontWeight: '600',
+							}}
+						>
+							• Example syntax don't: <b>(a + 4c) / 2 or 2 * b</b>
+						</p>
+					</div>
 				</form>
 			</div>
 		</div>

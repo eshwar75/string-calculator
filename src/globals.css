@@ -51,6 +51,12 @@
 	color: var(--primary-text-color);
 	font-size: var(--24px);
 }
+/* .card_description_style {
+	color: var(--secondary-text-color);
+	margin-block: var(--medium-margin);
+	font-weight: 400;
+	font-size: var(--16px);
+} */
 .content_container {
 	height: 100%;
 	display: flex;
@@ -120,4 +126,22 @@
 		width: 100%;
 		margin-bottom: var(--medium-margin);
 	}
+}
+.info-section {
+	color: var(--primary-text-color);
+	line-height: 1.8;
+	margin-bottom: 20px;
+}
+
+.info-section h3 {
+	margin-bottom: var(--small-margin);
+	font-size: var(--16px);
+	font-weight: bold;
+}
+
+.info-section p {
+	color: var(--secondary-text-color);
+	margin: 5px 0;
+	font-size: var(--14px);
+	font-weight: 600;
 }
