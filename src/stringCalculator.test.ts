@@ -1,5 +1,6 @@
 import {
 	calculateExpressionDecimal,
+	calculateString,
 	validateExpression,
 	validateRegexString,
 } from './stringCalculator';
@@ -87,6 +88,29 @@ describe('String Calculator Utility Functions', () => {
 			expect(calculateExpressionDecimal('20.2 - 7.2')).toBeCloseTo(13);
 			expect(calculateExpressionDecimal('65.4 * 1.1')).toBeCloseTo(71.94);
 			expect(calculateExpressionDecimal('24.1 / 8.3')).toBeCloseTo(2.9);
+		});
+	});
+	describe('calculate String function', () => {
+		it('evaluates simple expressions', () => {
+			expect(calculateString('46 + 32')).toBe(78);
+			expect(calculateString('18 - 14')).toBe(4);
+		});
+
+		it('handles operator precedence correctly', () => {
+			expect(calculateString('3 + 5 * 4')).toBe(23);
+		});
+
+		it('handles parentheses correctly', () => {
+			expect(calculateString('(3 + 5) * 4')).toBe(32);
+		});
+
+		it('handles decimals correctly', () => {
+			expect(calculateString('2.20 + 6.23')).toBeCloseTo(8.43);
+			expect(calculateString('(14.2 * 7.1) / 0.45')).toBeCloseTo(224.04);
+		});
+
+		it('evaluates multiple operations left-to-right with precedence', () => {
+			expect(calculateString('4 + 3 * 2 - 4 / 2')).toBeCloseTo(8);
 		});
 	});
 });

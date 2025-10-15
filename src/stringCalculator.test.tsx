@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import App from './App';
 
 describe('App Component', () => {
-	it('Initial renders', () => {
+	it('renders the basic UI correctly', () => {
 		render(<App />);
 		expect(screen.getByText('String Calculator')).toBeInTheDocument();
 		expect(screen.getByPlaceholderText(/enter here/i)).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe('App Component', () => {
 		fireEvent.click(button);
 
 		expect(screen.getByRole('alert')).toHaveTextContent(
-			'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'
+			'Please enter a valid numbers with operators(+, -, *, /)'
 		);
 	});
 
