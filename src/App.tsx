@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import './globals.css';
 import {
-	calculateExpression,
+	calculateExpressionDecimal,
 	calculateString,
 	validateExpression,
 	validateRegexString,
@@ -22,7 +22,7 @@ const App = () => {
 		}
 		if (
 			!validateRegexString(stringCalculator) &&
-			calculateExpression(stringCalculator) === null
+			calculateExpressionDecimal(stringCalculator) === null
 		) {
 			setWarningText(
 				'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'

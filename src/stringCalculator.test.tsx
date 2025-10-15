@@ -118,11 +118,11 @@ describe('App Component', () => {
 			'validateRegexString'
 		);
 		validateRegexStringMock.mockReturnValueOnce(false);
-		const calculateExpressionMock = vi.spyOn(
+		const calculateExpressionDecimalMock = vi.spyOn(
 			calculatorUtils,
-			'calculateExpression'
+			'calculateExpressionDecimal'
 		);
-		calculateExpressionMock.mockReturnValueOnce(null);
+		calculateExpressionDecimalMock.mockReturnValueOnce(null);
 
 		render(<App />);
 		const textarea = screen.getByPlaceholderText(/enter here/i);

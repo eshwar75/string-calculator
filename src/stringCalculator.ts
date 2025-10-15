@@ -34,7 +34,7 @@ export function validateRegexString(stringCalculator: string): boolean {
 	return true;
 }
 
-export function calculateExpression(stringValue: string): number | null {
+export function calculateExpressionDecimal(stringValue: string): number | null {
 	if (!validateExpression(stringValue)) return null;
 	try {
 		return Function(`"use strict"; return (${stringValue})`)();
