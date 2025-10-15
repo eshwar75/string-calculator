@@ -3,13 +3,14 @@ import { useState } from 'react';
 import './globals.css';
 import {
 	calculateExpression,
+	calculateString,
 	validateExpression,
 	validateRegexString,
 } from './stringCalculator';
 
 const App = () => {
 	const [stringCalculator, setStringCalculator] = useState('');
-	const [result, setResult] = useState(null);
+	const [result, setResult] = useState<number | null>(null);
 	const [warningText, setWarningText] = useState('');
 
 	const handleCalculateSubmit = (event: any) => {
@@ -33,6 +34,8 @@ const App = () => {
 			return;
 		}
 
+		const calculatedValue = calculateString(stringCalculator);
+		setResult(calculatedValue);
 		setWarningText('');
 	};
 
