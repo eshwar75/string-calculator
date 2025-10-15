@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import './globals.css';
+import { validateExpression, validateRegexString } from './stringCalculator';
+
 const App = () => {
 	const [stringCalculator, setStringCalculator] = useState('');
 	const [result, setResult] = useState(null);
@@ -8,16 +10,22 @@ const App = () => {
 
 	const handleCalculateSubmit = (event: any) => {
 		if (event) event.preventDefault();
+		setResult(null);
 		if (!stringCalculator) {
 			setWarningText('Please fill the field');
 			return;
 		}
-		if (/[^0-9+\-*/\s]/.test(stringCalculator)) {
+		if (!validateRegexString(stringCalculator)) {
 			setWarningText(
 				'Please enter a valid numbers with operators(+, -, *, /) eg: 1 + 4 + 18'
 			);
 			return;
 		}
+		if (!validateExpression(stringCalculator)) {
+			setWarningText('Invalid Parentheses');
+			return;
+		}
+
 		setWarningText('');
 	};
 
