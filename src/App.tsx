@@ -107,11 +107,17 @@ const App = () => {
 					{result !== null && (
 						<p
 							tabIndex={0}
+							data-testid="result-message"
 							className="result_test_style"
 						>{`Result: ${result}`}</p>
 					)}
 					{!warningText ? null : (
-						<div tabIndex={-1} role="alert" className="warning_text_style">
+						<div
+							tabIndex={-1}
+							data-testid="warning-message"
+							role="alert"
+							className="warning_text_style"
+						>
 							{warningText}
 						</div>
 					)}

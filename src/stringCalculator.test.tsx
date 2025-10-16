@@ -8,6 +8,7 @@ import {
 	operatorsRegexValid,
 	regexConsecutiveOperators,
 } from './stringCalculator';
+import userEvent from '@testing-library/user-event';
 
 vi.spyOn(calculatorUtils, 'validateExpression').mockImplementation(
 	(exp: string) => {
@@ -79,7 +80,7 @@ describe('App Component', () => {
 	});
 	it('initially displays no warnings and results', () => {
 		render(<App />);
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 		expect(screen.queryByText(/Result:/)).toBeNull();
 	});
 	it('renders the form and textarea correctly', () => {
@@ -101,7 +102,7 @@ describe('App Component', () => {
 		const button = screen.getByRole('button', { name: /calculate/i });
 		fireEvent.click(button);
 
-		expect(screen.getByRole('alert')).toHaveTextContent(
+		expect(screen.queryByTestId('warning-message')).toHaveTextContent(
 			'Please enter a valid numbers with operators(+, -, *, /)'
 		);
 	});
@@ -112,7 +113,7 @@ describe('App Component', () => {
 		expect(textarea).toBeInTheDocument();
 		expect(textarea).toHaveAttribute('aria-required', 'true');
 		expect(textarea).toHaveAttribute('required');
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 		expect(screen.queryByText(/Result:/)).toBeNull();
 	});
 
@@ -136,7 +137,9 @@ describe('App Component', () => {
 		const button = screen.getByRole('button', { name: /calculate/i });
 		fireEvent.click(button);
 
-		expect(screen.getByRole('alert')).toHaveTextContent('Invalid Parentheses');
+		expect(screen.queryByTestId('warning-message')).toHaveTextContent(
+			'Invalid Parentheses'
+		);
 	});
 
 	it('calculates & displays result for valid input', () => {
@@ -149,7 +152,7 @@ describe('App Component', () => {
 		const button = screen.getByRole('button', { name: /calculate/i });
 		fireEvent.click(button);
 
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 		expect(screen.getByText('Result: 15')).toBeInTheDocument();
 	});
 
@@ -164,7 +167,7 @@ describe('App Component', () => {
 
 		fireEvent.change(textarea, { target: { value: '' } });
 		expect(screen.queryByText(/Result:/)).toBeNull();
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 	});
 
 	it('clears value and resets warning/result when emptied', () => {
@@ -177,7 +180,7 @@ describe('App Component', () => {
 		expect(textarea.value).toBe('2 + 3');
 		fireEvent.change(textarea, { target: { value: '' } });
 		expect(textarea.value).toBe('');
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 		expect(screen.queryByText(/Result:/)).toBeNull();
 	});
 
@@ -200,8 +203,7 @@ describe('App Component', () => {
 		fireEvent.change(textarea, { target: { value: '+++' } });
 		fireEvent.click(button);
 
-		const alert = screen.getByRole('alert');
-		expect(alert).toHaveTextContent(
+		expect(screen.getByTestId('warning-message')).toHaveTextContent(
 			'Please enter a valid numbers with operators(+, -, *, /)'
 		);
 	});
@@ -216,7 +218,9 @@ describe('App Component', () => {
 		fireEvent.change(textarea, { target: { value: '(2 + 3' } });
 		fireEvent.click(button);
 
-		expect(screen.getByRole('alert')).toHaveTextContent('Invalid Parentheses');
+		expect(screen.queryByTestId('warning-message')).toHaveTextContent(
+			'Invalid Parentheses'
+		);
 	});
 
 	it('calculates valid input correctly', () => {
@@ -261,7 +265,7 @@ describe('App Component', () => {
 
 		expect(screen.getByText(/Result:/i)).toHaveTextContent('37.84');
 		expect(screen.queryByText(/Result:/)).not.toBeNull();
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 	});
 
 	it('handles decimals and numbers correctly with parentheses and operators', () => {
@@ -280,7 +284,7 @@ describe('App Component', () => {
 
 		fireEvent.change(textarea, { target: { value: '' } });
 		expect(textarea.value).toBe('');
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
 		expect(screen.queryByText(/Result:/)).toBeNull();
 
 		fireEvent.change(textarea, {
@@ -290,6 +294,66 @@ describe('App Component', () => {
 		});
 		fireEvent.click(button);
 		expect(screen.getByText(/Result:/i)).toHaveTextContent('15');
-		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByTestId('warning-message')).toBeNull();
+	});
+	it('should not focus element with tabIndex=-1 via Tab key', async () => {
+		const user = userEvent.setup();
+		render(<div tabIndex={-1}>Hidden focusable</div>);
+
+		await user.tab();
+		expect(screen.getByText('Hidden focusable')).not.toHaveFocus();
+	});
+	it('should focus elements in correct tab order', async () => {
+		const user = userEvent.setup();
+		render(<App />);
+
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+		await user.tab();
+		expect(textarea).toHaveFocus();
+		await user.tab();
+		expect(button).toHaveFocus();
+	});
+	it('should be focusable programmatically when tabIndex=-1', async () => {
+		render(<App />);
+		const user = userEvent.setup();
+
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+
+		await user.clear(textarea);
+		await user.type(textarea, '2 ++ 3');
+		await user.click(button);
+		const warningDiv = await screen.findByTestId('warning-message');
+		expect(warningDiv).toBeInTheDocument();
+
+		warningDiv.focus();
+		expect(warningDiv).toHaveFocus();
+	});
+
+	it('renders result when valid expression is entered using test id', async () => {
+		render(<App />);
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+
+		fireEvent.change(textarea, { target: { value: '5 * 4' } });
+		fireEvent.click(button);
+
+		const result = await screen.findByTestId('result-message');
+		expect(result).toBeInTheDocument();
+		expect(result).toHaveTextContent('Result: 20');
+	});
+
+	it('clears result when input is cleared using test id', async () => {
+		render(<App />);
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+
+		fireEvent.change(textarea, { target: { value: '2 + 3' } });
+		fireEvent.click(button);
+		expect(await screen.findByTestId('result-message')).toBeInTheDocument();
+
+		fireEvent.change(textarea, { target: { value: '' } });
+		expect(screen.queryByTestId('result-message')).toBeNull();
 	});
 });
