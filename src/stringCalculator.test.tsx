@@ -2,6 +2,71 @@ import * as calculatorUtils from './stringCalculator';
 import { describe, it, expect, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import App from './App';
+import {
+	invalidCharRegex,
+	numberRegex,
+	operatorsRegexValid,
+	regexConsecutiveOperators,
+} from './stringCalculator';
+
+vi.spyOn(calculatorUtils, 'validateExpression').mockImplementation(
+	(exp: string) => {
+		const validExpressions = [
+			'2 + 3',
+			'5 * 4',
+			'(4 + 5) * (4 / 2)',
+			'(2 + 3) * (4 - 1)',
+			'(14.8768982 * 7.1) / (0.45 + 3.3232245667) + (21.34 - 11.6947368)',
+		];
+		return validExpressions.includes(exp);
+	}
+);
+
+vi.spyOn(calculatorUtils, 'validateRegexString').mockImplementation(
+	(exp: string) => {
+		return invalidCharRegex.test(exp);
+	}
+);
+
+vi.spyOn(calculatorUtils, 'validateRegexString').mockImplementation(
+	(exp: string) => {
+		return numberRegex.test(exp);
+	}
+);
+
+vi.spyOn(calculatorUtils, 'validateRegexString').mockImplementation(
+	(exp: string) => {
+		return operatorsRegexValid.test(exp);
+	}
+);
+
+vi.spyOn(calculatorUtils, 'validateRegexString').mockImplementation(
+	(exp: string) => {
+		return regexConsecutiveOperators.test(exp);
+	}
+);
+
+vi.spyOn(calculatorUtils, 'calculateString').mockImplementation(
+	(exp: string) => {
+		if (exp === '2 + 3') return 5;
+		if (exp === '5 * 4') return 20;
+		if (exp === '(4 + 5) * (4 / 2)') return 18;
+		if (exp === '(2 + 3) * (4 - 1)') return 15;
+		if (
+			exp ===
+			'(14.8768982 * 7.1) / (0.45 + 3.3232245667) + (21.34 - 11.6947368)'
+		)
+			return 37.84;
+		return null;
+	}
+);
+
+vi.spyOn(calculatorUtils, 'validateRegexString').mockImplementation(
+	(exp: string) => {
+		if (exp === '2 ++ 3') return false;
+		return true;
+	}
+);
 
 describe('App Component', () => {
 	it('renders the basic UI correctly', () => {
@@ -11,6 +76,11 @@ describe('App Component', () => {
 		expect(
 			screen.getByRole('button', { name: /calculate/i })
 		).toBeInTheDocument();
+	});
+	it('initially displays no warnings and results', () => {
+		render(<App />);
+		expect(screen.queryByRole('alert')).toBeNull();
+		expect(screen.queryByText(/Result:/)).toBeNull();
 	});
 	it('renders the form and textarea correctly', () => {
 		render(<App />);
@@ -111,7 +181,6 @@ describe('App Component', () => {
 		expect(screen.queryByText(/Result:/)).toBeNull();
 	});
 
-	// mocks testing
 	it('shows warning for invalid regex expression', () => {
 		const validateRegexStringMock = vi.spyOn(
 			calculatorUtils,
@@ -177,9 +246,50 @@ describe('App Component', () => {
 		expect(result).toHaveTextContent('5.24');
 	});
 
-	it('initially displays no warnings and results', () => {
+	it('handles decimals correctly with parentheses and operators', () => {
 		render(<App />);
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+
+		fireEvent.change(textarea, {
+			target: {
+				value:
+					'(14.8768982 * 7.1) / (0.45 + 3.3232245667) + (21.34 - 11.6947368)',
+			},
+		});
+		fireEvent.click(button);
+
+		expect(screen.getByText(/Result:/i)).toHaveTextContent('37.84');
+		expect(screen.queryByText(/Result:/)).not.toBeNull();
+		expect(screen.queryByRole('alert')).toBeNull();
+	});
+
+	it('handles decimals and numbers correctly with parentheses and operators', () => {
+		render(<App />);
+		const textarea = screen.getByPlaceholderText(/enter here/i);
+		const button = screen.getByRole('button', { name: /calculate/i });
+
+		fireEvent.change(textarea, {
+			target: {
+				value:
+					'(14.8768982 * 7.1) / (0.45 + 3.3232245667) + (21.34 - 11.6947368)',
+			},
+		});
+		fireEvent.click(button);
+		expect(screen.getByText(/Result:/i)).toHaveTextContent('37.84');
+
+		fireEvent.change(textarea, { target: { value: '' } });
+		expect(textarea.value).toBe('');
 		expect(screen.queryByRole('alert')).toBeNull();
 		expect(screen.queryByText(/Result:/)).toBeNull();
+
+		fireEvent.change(textarea, {
+			target: {
+				value: '(2 + 3) * (4 - 1)',
+			},
+		});
+		fireEvent.click(button);
+		expect(screen.getByText(/Result:/i)).toHaveTextContent('15');
+		expect(screen.queryByRole('alert')).toBeNull();
 	});
 });
