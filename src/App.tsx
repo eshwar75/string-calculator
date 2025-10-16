@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
-import './globals.css';
 import {
 	calculateExpressionDecimal,
 	calculateString,
@@ -62,6 +61,8 @@ const App = () => {
 					src="https://images.unsplash.com/photo-1594352161389-11756265d1b5?q=80&w=800&auto=format&fit=crop"
 					alt="Calculator Banner"
 					className="image_style"
+					loading="lazy"
+					decoding="async"
 				/>
 
 				<h2 className="card_heading_style">String Calculator</h2>
