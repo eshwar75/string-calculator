@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-escape */
-const invalidCharRegex = /[^0-9+\-*()/\s]/;
-const regexConsecutiveOperators = /[+\-*\/]{2,}/;
-const numberRegex = /[0-9]/;
-const operatorsRegexValid = /\d+(\.\d+)?|\+|\-|\*|\/|\(|\)/g;
+export const invalidCharRegex = /[^0-9+\-*()/\s]/;
+export const regexConsecutiveOperators = /[+\-*\/]{2,}/;
+export const numberRegex = /[0-9]/;
+export const operatorsRegexValid = /\d+(\.\d+)?|\+|\-|\*|\/|\(|\)/g;
 export function validateExpression(string: string): boolean {
 	let balance = 0;
 	for (const ch of string) {
@@ -130,5 +130,11 @@ function calculateValue(operatorValues: string[]) {
 			}
 		}
 	}
-	return calculateValues[0];
+
+	if (calculateValues.length !== 1) {
+		return null;
+	}
+	return Number.isInteger(calculateValues[0])
+		? calculateValues[0]
+		: parseFloat(calculateValues[0].toFixed(2));
 }

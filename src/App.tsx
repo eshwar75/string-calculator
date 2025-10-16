@@ -80,7 +80,7 @@ const App = () => {
 						</button>
 					</div>
 					{result !== null && (
-						<p className="result_test_style">Result: {result}</p>
+						<p className="result_test_style">{`Result: ${result}`}</p>
 					)}
 					{!warningText ? null : (
 						<div role="alert" className="warning_text_style">

@@ -106,7 +106,12 @@ describe('String Calculator Utility Functions', () => {
 
 		it('handles decimals correctly', () => {
 			expect(calculateString('2.20 + 6.23')).toBeCloseTo(8.43);
-			expect(calculateString('(14.2 * 7.1) / 0.45')).toBeCloseTo(224.04);
+			expect(calculateString('(14.2 * 7.1) / 0.45')).toBe(224.04);
+			expect(
+				calculateString(
+					'(14.8768982 * 7.1) / (0.45 + 3.3232245667) + (21.34 - 11.6947368)'
+				)
+			).toBeCloseTo(37.64);
 		});
 
 		it('evaluates multiple operations left-to-right with precedence', () => {
