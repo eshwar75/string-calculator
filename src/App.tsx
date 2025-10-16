@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './globals.css';
 import {
 	calculateExpressionDecimal,
@@ -12,6 +12,16 @@ const App = () => {
 	const [stringCalculator, setStringCalculator] = useState('');
 	const [result, setResult] = useState<number | null>(null);
 	const [warningText, setWarningText] = useState('');
+
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const warningRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (warningText && warningRef.current) {
+			warningRef.current.focus();
+		}
+	}, [warningText]);
 
 	const handleCalculateSubmit = (event: any) => {
 		if (event) event.preventDefault();
@@ -37,6 +47,14 @@ const App = () => {
 		setWarningText('');
 	};
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (e.key === 'Enter' && e.shiftKey === false) {
+			e.preventDefault(); // prevent newline
+			buttonRef.current?.focus();
+			buttonRef.current?.click();
+		}
+	};
+
 	return (
 		<div className="app-container">
 			<div className="card_container">
@@ -58,6 +76,7 @@ const App = () => {
 							</label>
 							<textarea
 								id="string_calculator"
+								ref={textareaRef}
 								rows={2}
 								className="textarea_style"
 								placeholder="enter here"
@@ -71,19 +90,27 @@ const App = () => {
 										setWarningText('');
 									}
 								}}
+								onKeyDown={handleKeyDown}
 								aria-required="true"
 								required
 							/>
 						</div>
-						<button type="submit" className="primary_button_style">
+						<button
+							ref={buttonRef}
+							type="submit"
+							className="primary_button_style"
+						>
 							Calculate
 						</button>
 					</div>
 					{result !== null && (
-						<p className="result_test_style">{`Result: ${result}`}</p>
+						<p
+							tabIndex={0}
+							className="result_test_style"
+						>{`Result: ${result}`}</p>
 					)}
 					{!warningText ? null : (
-						<div role="alert" className="warning_text_style">
+						<div tabIndex={-1} role="alert" className="warning_text_style">
 							{warningText}
 						</div>
 					)}
